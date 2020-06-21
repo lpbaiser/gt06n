@@ -4,6 +4,7 @@
   "description": "Gt06n server",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,8 +16,5 @@
   "bugs": {
     "url": "https://github.com/antonvg2/gt06n/issues"
   },
-  "homepage": "https://github.com/antonvg2/gt06n#readme",
-  "dependencies": {
-    "net": "^1.0.2"
-  }
+  "homepage": "https://github.com/antonvg2/gt06n#readme"
 }
