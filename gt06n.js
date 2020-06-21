@@ -57,6 +57,46 @@ const hex2bin = (hex) => {
     return bin;
 };
 
+const convertHextoDMS = (coordinateHex) => {
+    const coordDecimal = parseInt(coordinateHex, 16);
+    const coordMinutes = coordDecimal / 30000;
+    const coordDegrees = coordMinutes / 60;
+    const degrees = parseInt(coordDegrees);
+    const minutes = (coordDegrees - degrees) * 60;
+    const seconds = (minutes - parseInt(minutes)) * 60;
+    return {
+        degrees,
+        minutes: parseInt(minutes),
+        seconds: seconds.toFixed(2),
+    };
+}
+
+const convertCoordHextoDDLatitude = (coordinateHex, northLatitude) => {
+    const {
+        degrees,
+        minutes,
+        seconds,
+    } = convertHextoDMS(coordinateHex);
+    const coordinate = degrees + (minutes / 60) + (seconds / 3600);
+    if (northLatitude == 0) {
+        return coordinate * -1;
+    }
+    return coordinate;
+}
+
+const convertCoordHextoDDLongitude = (coordinateHex, eastLongitude) => {
+    const {
+        degrees,
+        minutes,
+        seconds,
+    } = convertHextoDMS(coordinateHex);
+    const coordinate = degrees + (minutes / 60) + (seconds / 3600);
+    if (eastLongitude == 1) {
+        return coordinate * -1;
+    }
+    return coordinate;
+}
+
 const parseLocation = (data) => {
     let datasheet, parsed, courseBin;
 
@@ -81,12 +121,15 @@ const parseLocation = (data) => {
 
     courseBin = hex2bin(datasheet.course);
 
+    const latitude = convertCoordHextoDDLatitude(datasheet.lat, courseBin.substr(5, 1));
+    const logitude = convertCoordHextoDDLongitude(datasheet.lon, courseBin.substr(4, 1));
+
     parsed = {
         'datetime': parseDatetime(datasheet.datetime),
         'satelites': parseInt(datasheet.quantity.substr(0, 1), 16),
         'satelitesActive': parseInt(datasheet.quantity.substr(1, 1), 16),
-        'lat': datasheet.lat,
-        'lon': datasheet.lon,
+        'lat': latitude,
+        'lon': logitude,
         'speed': parseInt(datasheet.speed, 16),
         'real_time_gps': courseBin.substr(2, 1),
         'gps_positioned': courseBin.substr(3, 1),
